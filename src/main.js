@@ -2,7 +2,7 @@
 function calculateSimpleRevenue(purchase, _product) {
    // @TODO: Расчет выручки от операции
     const discount = 1 - (purchase.discount / 100);
-    return _product.sale_price * purchase.quantity * discount;
+    return purchase.sale_price * purchase.quantity * discount;
 }
 
 function calculateBonusByProfit(index, total, seller) {
@@ -36,10 +36,7 @@ function analyzeSalesData(data, options) {
         profit: 0,
         sales_count: 0,
         products_sold: {},
-        top_products: [{
-            sku:"",
-            quantity: 0
-        }],
+        top_products: [],
         bonus: 0,
     }));
 
@@ -60,14 +57,14 @@ function analyzeSalesData(data, options) {
         record.items.forEach(item => {
             const product = productsIndex[item.sku];
             const cost = product.purchase_price * item.quantity;
-            const revenue = calculateRevenue(item, product);
+            const revenue = calculateRevenue(item);
             const profit = revenue - cost;
             seller.profit += profit;
 
             if (!seller.products_sold[item.sku]) {
                 seller.products_sold[item.sku] = 0;
             }
-            seller.products_sold[item.sku]++;
+            seller.products_sold[item.sku] += item.quantity;
         })
     });
 
